@@ -1,0 +1,37 @@
+library(dplyr)
+library(tidyr)
+data<-read.table("household_power_consumption.txt",sep=";",header=TRUE,dec=".",colClasses=c("character","character","character","character","character","character","character","character","character"))
+data2<-filter(data,Date=="1/2/2007" | Date=="2/2/2007")
+data2$Date<-as.character(data2$Date)
+data2$Time<-as.character(data2$Time)
+data2$Date=strptime(data2$Date,format="%d/%m/%Y")
+data2$Global_active_power<-as.numeric(data2$Global_active_power)
+data2$Global_reactive_power<-as.numeric(data2$Global_reactive_power)
+data2$Voltage<-as.numeric(data2$Voltage)
+data2$Global_intensity<-as.numeric(data2$Global_intensity)
+data2$Sub_metering_1<-as.numeric(data2$Sub_metering_1)
+data2$Sub_metering_2<-as.numeric(data2$Sub_metering_2)
+data2$Sub_metering_3<-as.numeric(data2$Sub_metering_3)
+data2$Time<-paste(data2$Date,data2$Time, sep=" ")
+data2$Time<-strptime(data2$Time,format="%Y-%m-%d %H:%M:%S")
+
+#Plot4:
+par(mfrow=c(2,2),mar=c(4,4,2,1),oma=c(0,0,2,0))
+with(data2, {
+    plot(Time,Global_active_power,type="n",ylab="Global Active Power (kilowatts)",xlab="")
+    lines(data2$Time,data2$Global_active_power,type="l")
+    
+    plot(Time,Voltage,type="n",ylab="Voltage",xlab="datetime")
+    lines(data2$Time,data2$Voltage,type="l")
+    
+    plot(Time,Sub_metering_1,type="n",ylab="Energy Sub Metering",xlab="")
+    legend("topright", box.lty = 0, inset=0.01,  cex=0.65, lty=1, col = c("black","blue", "red"), legend = c("Sub_metering_1", "Sub_metering_2","Sub_metering_3"))
+    lines(data2$Time,data2$Sub_metering_1,type="l")
+    lines(data2$Time,data2$Sub_metering_2,type="l",col="red")
+    lines(data2$Time,data2$Sub_metering_3,type="l",col="blue")
+    
+    plot(Time,Global_reactive_power,type="n",ylab="Global_reactive_power",xlab="datetime")
+    lines(data2$Time,data2$Global_reactive_power,type="l")
+})
+dev.copy(png,"plot4.png")
+dev.off()
